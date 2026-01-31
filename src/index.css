@@ -1,0 +1,145 @@
+@import './styles/design-system.css';
+@import 'leaflet/dist/leaflet.css';
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Overrides for Luxury Aesthetic */
+:root {
+    --primary-gold: var(--gold);
+    --bg-soft: var(--slate-50);
+}
+
+body {
+    background-color: var(--bg-soft);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ⚡ Global Micro-interactions */
+@layer base {
+
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        @apply transition-all duration-300 ease-in-out;
+    }
+
+    button:active {
+        @apply scale-[0.98];
+    }
+}
+
+
+/* Base reveal transition for elements */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Glassmorphism system */
+.glass-surface {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Custom cards */
+.luxury-card {
+    @apply bg-white rounded-[2rem] border border-slate-100 shadow-ios transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl;
+}
+
+/* 🗺️ Leaflet Fixes for Tailwind & Visibility */
+.leaflet-tile {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.leaflet-container {
+    z-index: 1 !important;
+    outline: none;
+    background: transparent !important;
+    /* Don't hide the tiles! */
+}
+
+/* Ensure tiles are visible even if Tailwind tries to hide them */
+.leaflet-tile-pane {
+    opacity: 1 !important;
+    z-index: 2 !important;
+}
+
+.leaflet-layer {
+    opacity: 1 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+.leaflet-marker-pane {
+    z-index: 600 !important;
+}
+
+.custom-hotel-marker {
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
+    transition: z-index 0s linear;
+    /* Instant z-index switch */
+}
+
+/* 📍 Animated Marker Elements */
+.marker-pin {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom center;
+}
+
+.marker-content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.marker-triangle {
+    transition: all 0.3s ease;
+}
+
+/* Active State */
+.custom-hotel-marker.marker-active {
+    z-index: 9999 !important;
+}
+
+.custom-hotel-marker.marker-active .marker-pin {
+    transform: scale(1.15) translateY(-5px);
+}
+
+.custom-hotel-marker.marker-active .marker-content {
+    background-color: #D6B372 !important;
+    /* Primary Gold */
+    border-color: #fbf6e9 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.custom-hotel-marker.marker-active .marker-triangle {
+    border-top-color: #D6B372 !important;
+}
+
+/* Hover State (when not active) */
+.custom-hotel-marker:not(.marker-active).marker-hover {
+    z-index: 9000 !important;
+}
+
+.custom-hotel-marker:not(.marker-active).marker-hover .marker-pin {
+    transform: scale(1.1);
+}
+
+.custom-hotel-marker:not(.marker-active).marker-hover .marker-content {
+    background-color: #059669 !important;
+    /* emerald-600 */
+}

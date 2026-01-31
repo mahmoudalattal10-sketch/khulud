@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 🛡️ CONTENT SECURITY POLICY (Platinum Standard 2026) -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://accounts.google.com https://connect.facebook.net;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com data:;
+        img-src * data: blob: 'self';
+        connect-src 'self' http://localhost:3001 https://*.paytabs.sa https://*.paytabs.com https://accounts.google.com;
+        frame-src 'self' https://accounts.google.com https://*.paytabs.sa https://*.paytabs.com;
+    ">
+    <title>Diafat Khulud - ضيافة خلود</title>
+    <!-- 🔠 Cairo Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+</body>
+
+</html>

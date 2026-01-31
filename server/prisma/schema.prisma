@@ -1,0 +1,244 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 🏨 Hotel Model (محرك الفنادق)
+model Hotel {
+  id                String   @id @default(uuid())
+  slug              String   @unique
+  name              String
+  nameEn            String
+  location          String
+  locationEn        String
+  city              String   
+  country           String   @default("SA")
+  rating            Float    @default(0)
+  reviews           Int      @default(0)
+  basePrice         Float
+  image             String   // Main cover image
+  coords            String   // Stored as "lat,lng" string
+  description       String   @db.Text
+  isOffer           Boolean  @default(false)
+  isFeatured        Boolean  @default(false)
+  discount          String?
+  distanceFromHaram String?
+  hasFreeBreakfast  Boolean  @default(false)
+  hasFreeTransport  Boolean  @default(false)
+  extraBedStock     Int      @default(0)
+  isVisible         Boolean  @default(true)
+  view              String?  
+  
+  // Relations - Normalized
+  images        HotelImage[]
+  amenities     HotelAmenity[]
+  rooms         Room[]
+  guestReviews  Review[]
+  nearbyPlaces  NearbyPlace[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// 📍 Nearby Places (Points of Interest)
+model NearbyPlace {
+  id             String   @id @default(uuid())
+  name           String
+  distance       String
+  distanceMeters Int?     
+  type           String?  // e.g., "airport", "shopping", "religious"
+  icon           String?  // Lucide icon name
+  sortOrder      Int      @default(0)
+  
+  hotelId        String
+  hotel          Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}
+
+// 🖼️ Hotel Images
+model HotelImage {
+  id        String   @id @default(uuid())
+  url       String
+  caption   String?  // e.g., "Lobby", "Exterior"
+  isMain    Boolean  @default(false)
+  
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}
+
+// 🛁 Amenities Refrence Table
+model Amenity {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  nameEn    String
+  icon      String?  // Name of the Lucide icon
+  
+  hotels    HotelAmenity[]
+}
+
+// Junction Table for Hotel <-> Amenity
+model HotelAmenity {
+  hotelId   String
+  amenityId String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  amenity   Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([hotelId, amenityId])
+}
+
+// 🌟 Review Model
+model Review {
+  id        String   @id @default(uuid())
+  userName  String
+  rating    Float
+  text      String   @db.Text
+  date      String
+  
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+}
+
+// 🛏️ Room Model
+model Room {
+  id             String   @id @default(uuid())
+  name           String
+  type           String   
+  capacity       Int
+  price          Float
+  availableStock Int      @default(0)
+  mealPlan       String   
+  view           String?  
+  area           Float?   
+  beds           String?  
+  sofa           Boolean  @default(false)
+  allowExtraBed  Boolean  @default(false)
+  extraBedPrice  Float    @default(0)
+  maxExtraBeds   Int      @default(1)
+  isVisible      Boolean  @default(true)
+
+  // Relations - Normalized
+  images         RoomImage[]
+  features       RoomFeature[]
+  pricingPeriods PricingPeriod[]
+  bookings       Booking[]
+
+  hotelId        String
+  hotel          Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+}
+
+// 🖼️ Room Images
+model RoomImage {
+  id        String   @id @default(uuid())
+  url       String
+  
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+// ✨ Room Features (e.g., "Free Wi-Fi", "Bathtub")
+model RoomFeature {
+  id        String   @id @default(uuid())
+  name      String
+  
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+// 📅 Pricing Periods (For seasonal data)
+model PricingPeriod {
+  id        String   @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  price     Float
+  
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}
+
+// 👤 User Model
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   
+  name      String
+  phone     String?
+  country   String?  // New field for visitor's origin
+  role      String   @default("USER") // USER, ADMIN, SUPER_ADMIN
+  
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+}
+
+// 📅 Booking Model
+model Booking {
+  id             String   @id @default(uuid())
+  checkIn        DateTime
+  checkOut       DateTime
+  subtotal       Float    @default(0)
+  totalPrice     Float
+  discountAmount Float    @default(0)
+  status         String   @default("PENDING") 
+  paymentStatus  String   @default("UNPAID") 
+  paymentRef     String?  
+  
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  roomId         String
+  room           Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  guestsCount    Int
+  roomCount      Int      @default(1)  
+  extraBedCount  Int      @default(0)  
+  guestName      String?  
+  guestEmail     String?  // New field for specific booking guest email
+  guestPhone     String?  // New field for specific booking guest phone
+  specialRequests String?  @db.Text
+  
+  couponId       String?
+  coupon         Coupon?  @relation(fields: [couponId], references: [id])
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// 🔔 Notification Model
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   
+  title     String
+  message   String   @db.Text
+  data      String?  @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// 📩 Contact Message Model
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// 🎫 Coupon Model
+model Coupon {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  discount  Int      
+  limit     Int      
+  usedCount Int      @default(0) 
+  isActive  Boolean  @default(true)
+  bookings  Booking[]
+  createdAt DateTime @default(now())
+}
