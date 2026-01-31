@@ -6,7 +6,12 @@
     "scripts": {
         "start": "npx prisma migrate deploy && node dist/index.js",
         "dev": "nodemon src/index.ts",
-        "build": "npx prisma generate && tsc"
+        "build": "npx prisma generate && tsc",
+        "migrate": "npx prisma migrate deploy",
+        "seed": "npx prisma db seed"
+    },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
     },
     "keywords": [],
     "author": "Nexus 2026",
