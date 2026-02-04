@@ -1,5 +1,6 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './features/ui/Navbar';
 import Footer from './features/ui/Footer';
 import { SearchProvider } from './contexts/SearchContext';
@@ -9,6 +10,9 @@ import { useAntiTamper } from './hooks/useAntiTamper';
 import { AlertCircle, RefreshCw, Home as HomeIcon, Users, Briefcase, HelpCircle, Shield, FileText } from 'lucide-react';
 import StaticPage from './pages/StaticPage';
 import { AboutContent, FAQContent, PrivacyContent, TermsContent } from './features/ui/StaticContent';
+import SmoothScrollProvider from './features/ui/SmoothScrollProvider';
+import Preloader from './features/ui/Preloader';
+import PageTransition from './features/ui/PageTransition';
 
 // 🛡️ Global Error Boundary to prevent blank pages
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: Error | null }> {
@@ -97,9 +101,12 @@ const PaymentCallback = lazy(() => import('./pages/PaymentCallback'));
 const CompareHotels = lazy(() => import('./pages/CompareHotels'));
 import ComparisonBar from './features/ui/ComparisonBar';
 
+import { useLenis } from '@studio-freight/react-lenis';
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const lenis = useLenis();
 
   // 🔄 Smart Hash Redirect Fix
   useEffect(() => {
@@ -113,12 +120,19 @@ const ScrollToTop = () => {
   }, [navigate]);
 
   useEffect(() => {
+    // 1. Native Scroll Reset
     try {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
     } catch (e) {
       window.scrollTo(0, 0);
     }
-  }, [pathname]);
+
+    // 2. Lenis Scroll Reset (Critical for smooth scroll)
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    }
+  }, [pathname, lenis]);
+
   return null;
 };
 
@@ -133,6 +147,11 @@ const Placeholder = ({ title }: { title: string }) => (
   </div>
 );
 
+// 🌀 Animation Wrapper
+const PageWrapper = ({ children }: { children: React.ReactNode }) => (
+  <PageTransition>{children}</PageTransition>
+);
+
 const App: React.FC = () => {
   const location = useLocation();
   useAntiTamper(); // 🛡️ Activate Site-wide Security Shield
@@ -142,41 +161,46 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-luxury-bg selection:bg-gold/10 selection:text-gold-dark text-right" dir="rtl">
+      <Preloader />
       {!shouldHideNavbar && <Navbar />}
       <main className="flex-grow">
         <ErrorBoundary>
-          <Suspense fallback={<div className="min-h-screen" />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/compare" element={<CompareHotels />} />
-              <Route path="/hotels" element={<Hotels />} />
-              <Route path="/hotel/:id" element={<HotelDetails />} />
-              <Route path="/booking/:id" element={<BookingPage />} />
-              <Route path="/booking/:id/voucher" element={<VoucherPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/favorites" element={<Profile />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/payment/callback" element={<PaymentCallback />} />
+          <SmoothScrollProvider>
+            <Suspense fallback={<div className="min-h-screen" />}>
+              <AnimatePresence mode="wait">
+                <Routes location={location} key={location.pathname}>
+                  <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+                  <Route path="/compare" element={<PageWrapper><CompareHotels /></PageWrapper>} />
+                  <Route path="/hotels" element={<PageWrapper><Hotels /></PageWrapper>} />
+                  <Route path="/hotel/:id" element={<PageWrapper><HotelDetails /></PageWrapper>} />
+                  <Route path="/booking/:id" element={<PageWrapper><BookingPage /></PageWrapper>} />
+                  <Route path="/booking/:id/voucher" element={<PageWrapper><VoucherPage /></PageWrapper>} />
+                  <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+                  <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
+                  <Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
+                  <Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
+                  <Route path="/favorites" element={<PageWrapper><Profile /></PageWrapper>} />
+                  <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+                  <Route path="/admin/login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
+                  <Route path="/payment/callback" element={<PageWrapper><PaymentCallback /></PageWrapper>} />
 
-              {/* Static Pages */}
-              <Route path="/about" element={<StaticPage title="من نحن" subtitle="قصة ضيافة خلود.. رحلة من التميز في الضيافة إلى العالم." icon={Users} content={<AboutContent />} />} />
-              <Route path="/team" element={<StaticPage title="فريق العمل" subtitle="نخبـة من الخبراء في مجال الضيافة والخدمات الفاخرة." icon={Users} content={<AboutContent />} />} />
-              <Route path="/jobs" element={<StaticPage title="الوظائف" subtitle="انضم إلينا وكن جزءاً من قصة نجاحنا." icon={Briefcase} />} />
-              <Route path="/partners" element={<StaticPage title="شركاء النجاح" subtitle="نفخر بشراكتنا مع كبرى الفنادق وشركات الخدمات." icon={Users} />} />
+                  {/* Static Pages */}
+                  <Route path="/about" element={<PageWrapper><StaticPage title="من نحن" subtitle="قصة ضيافة خلود.. رحلة من التميز في الضيافة إلى العالم." icon={Users} content={<AboutContent />} /></PageWrapper>} />
+                  <Route path="/team" element={<PageWrapper><StaticPage title="فريق العمل" subtitle="نخبـة من الخبراء في مجال الضيافة والخدمات الفاخرة." icon={Users} content={<AboutContent />} /></PageWrapper>} />
+                  <Route path="/jobs" element={<PageWrapper><StaticPage title="الوظائف" subtitle="انضم إلينا وكن جزءاً من قصة نجاحنا." icon={Briefcase} /></PageWrapper>} />
+                  <Route path="/partners" element={<PageWrapper><StaticPage title="شركاء النجاح" subtitle="نفخر بشراكتنا مع كبرى الفنادق وشركات الخدمات." icon={Users} /></PageWrapper>} />
 
-              <Route path="/help" element={<StaticPage title="مركز المساعدة" subtitle="كيف يمكننا مساعدتك اليوم؟" icon={HelpCircle} content={<FAQContent />} />} />
-              <Route path="/faq" element={<StaticPage title="الأسئلة الشائعة" subtitle="إجابات لأكثر الاستفسارات شيوعاً." icon={HelpCircle} content={<FAQContent />} />} />
-              <Route path="/privacy" element={<StaticPage title="سياسة الخصوصية" subtitle="نحن نلتزم بحماية بياناتك وخصوصيتك." icon={Shield} content={<PrivacyContent />} />} />
-              <Route path="/terms" element={<StaticPage title="الشروط والأحكام" subtitle="القواعد والضوابط المنظمة لاستخدام الموقع وخدماتنا." icon={FileText} content={<TermsContent />} />} />
-              <Route path="/sitemap" element={<StaticPage title="خريطة الموقع" icon={FileText} />} />
+                  <Route path="/help" element={<PageWrapper><StaticPage title="مركز المساعدة" subtitle="كيف يمكننا مساعدتك اليوم؟" icon={HelpCircle} content={<FAQContent />} /></PageWrapper>} />
+                  <Route path="/faq" element={<PageWrapper><StaticPage title="الأسئلة الشائعة" subtitle="إجابات لأكثر الاستفسارات شيوعاً." icon={HelpCircle} content={<FAQContent />} /></PageWrapper>} />
+                  <Route path="/privacy" element={<PageWrapper><StaticPage title="سياسة الخصوصية" subtitle="نحن نلتزم بحماية بياناتك وخصوصيتك." icon={Shield} content={<PrivacyContent />} /></PageWrapper>} />
+                  <Route path="/terms" element={<PageWrapper><StaticPage title="الشروط والأحكام" subtitle="القواعد والضوابط المنظمة لاستخدام الموقع وخدماتنا." icon={FileText} content={<TermsContent />} /></PageWrapper>} />
+                  <Route path="/sitemap" element={<PageWrapper><StaticPage title="خريطة الموقع" icon={FileText} /></PageWrapper>} />
 
-              <Route path="*" element={<Placeholder title="الصفحة غير موجودة" />} />
-            </Routes>
-          </Suspense>
+                  <Route path="*" element={<PageWrapper><Placeholder title="الصفحة غير موجودة" /></PageWrapper>} />
+                </Routes>
+              </AnimatePresence>
+            </Suspense>
+          </SmoothScrollProvider>
         </ErrorBoundary>
       </main>
       <ComparisonBar />

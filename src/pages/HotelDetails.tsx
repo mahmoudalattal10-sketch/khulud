@@ -9,8 +9,6 @@ import confetti from 'canvas-confetti';
 // Shared Components
 import MobileSearchOverlay from '../features/search/components/MobileSearchOverlay';
 import HotelBookingSearch from '../features/search/components/HotelBookingSearch';
-import HotelViewMap from '../features/hotels/components/HotelViewMap';
-
 // Modular Feature Components
 import HotelGallery from '../features/hotels/components/HotelGallery';
 import HotelGalleryModal from '../features/hotels/components/HotelGalleryModal';
@@ -19,10 +17,13 @@ import HotelFacilities from '../features/hotels/components/HotelFacilities';
 import HotelNearbyPlaces from '../features/hotels/components/HotelNearbyPlaces';
 import HotelRooms from '../features/hotels/components/HotelRooms';
 import HotelPolicies from '../features/hotels/components/HotelPolicies';
-import RelatedHotels from '../features/hotels/components/RelatedHotels';
 import MobileBookingDocker from '../features/hotels/components/MobileBookingDocker';
 import HotelFullDetails from '../features/hotels/components/HotelFullDetails';
 import BookingSummary from '../features/hotels/components/BookingSummary';
+
+// Lazy Load Heavy Components
+const HotelViewMap = React.lazy(() => import('../features/hotels/components/HotelViewMap'));
+const RelatedHotels = React.lazy(() => import('../features/hotels/components/RelatedHotels'));
 
 import { useSearch, formatDateArabic } from '../contexts/SearchContext';
 import { MEAL_PLAN_LABELS } from '../constants/hotelConstants';
@@ -55,7 +56,7 @@ const HotelDetails = () => {
     const { hotel, rooms, loading, error, refetch } = useHotelDetails(id, {
         checkIn: queryParams.checkIn || (searchData.hasSearched ? searchData.checkIn : undefined),
         checkOut: queryParams.checkOut || (searchData.hasSearched ? searchData.checkOut : undefined),
-        guests: queryParams.guests || (searchData.hasSearched ? (searchData.adults || 0) + (searchData.children || 0) : undefined)
+        guests: queryParams.guests || (searchData.hasSearched ? (searchData.adults || 0) : undefined)
     });
 
     useEffect(() => {
@@ -72,8 +73,8 @@ const HotelDetails = () => {
             const newParams = new URLSearchParams(window.location.search);
             newParams.set('checkIn', searchData.checkIn.toLocaleDateString('en-CA'));
             newParams.set('checkOut', searchData.checkOut.toLocaleDateString('en-CA'));
-            if (searchData.adults || typeof searchData.children === 'number') {
-                newParams.set('guests', String((searchData.adults || 0) + (searchData.children || 0)));
+            if (searchData.adults) {
+                newParams.set('guests', String(searchData.adults || 0));
             }
             navigate(`${window.location.pathname}?${newParams.toString()}`, { replace: true });
         }
@@ -174,7 +175,8 @@ const HotelDetails = () => {
 
         const adults = data.adults || data.guests?.adults || 0;
         const children = data.children || data.guests?.children || 0;
-        const totalGuests = adults + children;
+        // [MODIFIED] Only count adults for filtering per user request
+        const totalGuests = adults;
 
         if (totalGuests) {
             newParams.set('guests', String(totalGuests));
@@ -357,6 +359,7 @@ const HotelDetails = () => {
                     <div className="h-24 md:h-28" />
                     <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-6">
                         <HotelGallery
+                            hotelId={hotel.id}
                             hotelName={hotel.name}
                             mainImage={hotel.image}
                             images={hotel.images || []}
@@ -468,7 +471,10 @@ const HotelDetails = () => {
                                     </div>
                                 </section>
 
-                                <RelatedHotels currentHotelId={hotel.id} city={hotel.city} />
+
+                                <React.Suspense fallback={<div className="h-96 bg-slate-100 rounded-[2rem] animate-pulse" />}>
+                                    <RelatedHotels currentHotelId={hotel.id} city={hotel.city} />
+                                </React.Suspense>
 
                                 <HotelPolicies />
 
@@ -480,12 +486,14 @@ const HotelDetails = () => {
                             <div className="lg:col-span-4 space-y-8">
                                 <div className="hidden lg:block bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden p-2">
                                     <div className="h-72 w-full">
-                                        <HotelViewMap
-                                            lat={hotel.lat || hotel.coords?.[0] || 0}
-                                            lng={hotel.lng || hotel.coords?.[1] || 0}
-                                            hotelName={hotel.name}
-                                            distanceFromHaram={hotel.distanceFromHaram}
-                                        />
+                                        <React.Suspense fallback={<div className="h-full w-full bg-slate-100 animate-pulse" />}>
+                                            <HotelViewMap
+                                                lat={hotel.lat || hotel.coords?.[0] || 0}
+                                                lng={hotel.lng || hotel.coords?.[1] || 0}
+                                                hotelName={hotel.name}
+                                                distanceFromHaram={hotel.distanceFromHaram}
+                                            />
+                                        </React.Suspense>
                                     </div>
                                     <div className="p-6">
                                         <div className="flex items-center gap-4 text-slate-500 mb-6">

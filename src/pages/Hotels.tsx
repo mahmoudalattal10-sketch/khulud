@@ -99,8 +99,9 @@ const Hotels = () => {
                 params.set('checkOut', formatDate(new Date(searchData.checkOut)));
             }
 
-            if (searchData.adults || searchData.children) {
-                const totalGuests = (searchData.adults || 0) + (searchData.children || 0);
+            if (searchData.adults) {
+                // [MODIFIED] Only count adults for filtering per user request
+                const totalGuests = (searchData.adults || 0);
                 if (totalGuests > 0) params.set('guests', totalGuests.toString());
             }
 
@@ -265,7 +266,8 @@ const Hotels = () => {
         if (data.checkIn) params.set('checkIn', formatDate(data.checkIn));
         if (data.checkOut) params.set('checkOut', formatDate(data.checkOut));
 
-        const totalGuests = (data.guests?.adults || 0) + (data.guests?.children || 0);
+        // [MODIFIED] Only count adults for filtering per user request
+        const totalGuests = (data.guests?.adults || 0);
         if (totalGuests > 0) params.set('guests', totalGuests.toString());
 
         // Use navigate to update URL which triggers the hook

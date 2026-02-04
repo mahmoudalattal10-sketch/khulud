@@ -11,59 +11,54 @@ export default {
     theme: {
         extend: {
             colors: {
-                // 🎨 STRICT USER PALETTE (2026)
-                // 1. #D6B372 (Primary Gold)
-                // 2. #0f172a (Secondary Dark)
-                // 3. #94a3b8 (Text Light)
-                // 4. #059669 (Accent Green)
+                // 🎨 DYNAMIC PALETTE (Linked to design-system.css)
+                primary: 'var(--primary)',      // Gold
+                secondary: 'var(--secondary)',  // Dark
 
-                primary: '#D6B372',
-                secondary: '#0f172a',
+                text: 'var(--text)',
+                textLight: 'var(--text-light)',
 
-                text: '#0f172a',       // Dark Headings
-                textLight: '#94a3b8',  // Light Paragraphs
+                border: 'var(--border)',
+                accent: 'var(--accent)',
+                success: 'var(--success)',
 
-                border: '#94a3b8',
-                accent: '#059669',
-                success: '#059669',
-
-                // Minimal Aliases for Compatibility
+                // Minimal Aliases
                 gold: {
-                    DEFAULT: '#D6B372',
-                    light: '#E5C992',
-                    dark: '#B59450',
-                    '50': '#fbf6e9',
-                    '100': '#f7edcd',
-                    '200': '#eed893',
-                    '300': '#e3bd5e',
-                    '400': '#d6b372',
-                    '500': '#c5a059',
-                    '600': '#a88248',
-                    '700': '#8a683d',
-                    '800': '#725537',
-                    '900': '#614932',
+                    DEFAULT: 'var(--gold)',
+                    light: 'var(--gold-light)',
+                    dark: 'var(--gold-dark)',
+                    '50': 'var(--gold-50)',
+                    '100': 'var(--gold-100)',
+                    '200': 'var(--gold-200)',
+                    '300': 'var(--gold-300)',
+                    '400': 'var(--gold-400)',
+                    '500': 'var(--gold-500)',
+                    '600': 'var(--gold-600)',
+                    '700': 'var(--gold-700)',
+                    '800': 'var(--gold-800)',
+                    '900': 'var(--gold-900)',
                 },
                 slate: {
-                    DEFAULT: '#0f172a',
-                    50: '#f8fafc',
-                    100: '#f1f5f9',
-                    200: '#e2e8f0',
-                    300: '#cbd5e1',
-                    400: '#94a3b8',
-                    500: '#64748b',
-                    600: '#475569',
-                    700: '#334155',
-                    800: '#1e293b',
-                    900: '#0f172a',
-                    primary: '#0f172a',
-                    secondary: '#D6B372',
-                    action: '#059669',
-                    text: '#0f172a',
-                    textLight: '#64748b',
-                    border: '#cbd5e1',
-                    'luxury-gradient': 'linear-gradient(135deg, #f8fafc 0%, #dfc798 100%)',
-                    'brand-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                    'gold-shine': 'linear-gradient(135deg, #c5a059 0%, #dfc798 100%)',
+                    DEFAULT: 'var(--secondary)',
+                    50: 'var(--slate-50)',
+                    100: 'var(--slate-100)',
+                    200: 'var(--slate-200)',
+                    300: 'var(--slate-300)',
+                    400: 'var(--slate-400)',
+                    500: 'var(--slate-500)',
+                    600: 'var(--slate-600)',
+                    700: 'var(--slate-700)',
+                    800: 'var(--slate-800)',
+                    900: 'var(--slate-900)',
+                    primary: 'var(--secondary)', // Map slate-primary to dark
+                    secondary: 'var(--gold)',    // Map slate-secondary to gold
+                    action: 'var(--accent)',
+                    text: 'var(--text)',
+                    textLight: 'var(--text-light)',
+                    border: 'var(--border)',
+                    'luxury-gradient': 'linear-gradient(135deg, var(--slate-50) 0%, var(--gold-light) 100%)',
+                    'brand-gradient': 'linear-gradient(135deg, var(--secondary) 0%, var(--slate-800) 100%)',
+                    'gold-shine': 'linear-gradient(135deg, var(--gold-500) 0%, var(--gold-light) 100%)',
                     'hero-pattern': 'radial-gradient(ellipse at top right, rgba(15, 23, 42, 0.05) 0%, transparent 50%)',
                 },
             },

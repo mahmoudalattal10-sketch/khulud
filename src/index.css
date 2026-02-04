@@ -121,14 +121,14 @@ body {
 }
 
 .custom-hotel-marker.marker-active .marker-content {
-    background-color: #D6B372 !important;
+    background-color: var(--gold) !important;
     /* Primary Gold */
-    border-color: #fbf6e9 !important;
+    border-color: var(--gold-50) !important;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .custom-hotel-marker.marker-active .marker-triangle {
-    border-top-color: #D6B372 !important;
+    border-top-color: var(--gold) !important;
 }
 
 /* Hover State (when not active) */
@@ -141,6 +141,6 @@ body {
 }
 
 .custom-hotel-marker:not(.marker-active).marker-hover .marker-content {
-    background-color: #059669 !important;
+    background-color: var(--accent) !important;
     /* emerald-600 */
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#F3F6F6] pt-0 pb-6 px-3 overflow-hidden mt-0">
+    <footer className="relative bg-[#F3F6F6] pt-0 pb-28 md:pb-6 px-3 overflow-hidden mt-0">
       {/* Background Blob */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-white via-gold-50/30 to-transparent opacity-80 pointer-events-none" />
 
@@ -140,8 +140,13 @@ export default function Footer() {
 
           {/* Footer Bottom */}
           <div className="mt-12 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-gray-400 text-sm font-medium">
+            <p className="text-gray-400 text-sm font-medium flex flex-wrap items-center gap-2">
               © 2026 جميع الحقوق محفوظة لـ <span className="text-gold-dark font-bold">ضيافة خلود</span>.
+              <span className="hidden md:inline text-slate-300">|</span>
+              <a href="https://wa.me/201018565155" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors flex items-center gap-1 group">
+                <span className="text-xs">تم التطوير بواسطة</span>
+                <span dir="ltr" className="font-bold text-slate-500 group-hover:text-gold transition-colors">elattal co.</span>
+              </a>
             </p>
             <div className="flex gap-6 text-xs text-gray-400 font-medium">
               <Link to="/privacy" className="hover:text-gold transition-colors">الخصوصية</Link>

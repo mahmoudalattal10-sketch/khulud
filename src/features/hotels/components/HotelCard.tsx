@@ -6,6 +6,8 @@ import { useUserPreferences } from '../../../contexts/UserPreferencesContext';
 import { getImageUrl } from '../../../utils/imageHelper';
 import { formatHotelDistance } from '../../../utils/formatters';
 import { Star, MapPin, Heart, Scale, Shield, CheckCircle2, ChevronLeft, Wifi, Car, Waves, Dumbbell, Utensils, Plane, Sparkles, Bell, Gamepad2, Briefcase, Shirt, UserCheck, Coffee, Key, Eye, Bus, Info, Building, Store, MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import MagneticButton from '../../ui/MagneticButton';
 
 type MasterHotel = (ApiHotel | LegacyHotel) & {
   slug?: string;
@@ -103,12 +105,14 @@ const HotelCard: React.FC<HotelCardProps> = React.memo(({ hotel, compact = false
     <Link to={`/hotel/${hotel.slug || hotel.id}`} className={`block group ${offerMode ? 'h-full' : 'mb-8'}`}>
       <div
         ref={cardRef}
-        className={`relative bg-white/40 backdrop-blur-xl rounded-[2.8rem] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-700 hover:shadow-[0_20px_60px_rgba(0,0,0,0.12)] hover:-translate-y-2 flex flex-col ${offerMode ? 'h-full' : 'md:flex-row'} gap-0 ${offerMode ? '' : 'md:gap-8'} p-4 ${isVisible ? 'animate-ios-slide' : 'opacity-0'}`}
+        className={`relative bg-white/40 backdrop-blur-md rounded-[2.8rem] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-700 hover:shadow-[0_20px_60px_rgba(0,0,0,0.12)] hover:-translate-y-2 flex flex-col ${offerMode ? 'h-full' : 'md:flex-row'} gap-0 ${offerMode ? '' : 'md:gap-8'} p-4 ${isVisible ? 'animate-ios-slide' : 'opacity-0'} will-change-transform`}
         style={{ animationDelay: `${(index % 3) * 150}ms` }}
       >
         {/* 1. IMAGE SECTION (Adaptive) */}
         <div className={`w-full ${offerMode ? 'aspect-[4/3] h-[200px]' : 'md:w-[380px] lg:w-[440px] aspect-[4/3] md:aspect-auto md:h-[320px]'} rounded-[2.2rem] overflow-hidden relative shrink-0 shadow-2xl`}>
-          <img
+          <motion.img
+            layoutId={`hotel-image-${hotel.id}`}
+            transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
             src={getImageUrl(hotel.image)}
             alt={hotel.name}
             loading="lazy"
@@ -264,11 +268,11 @@ const HotelCard: React.FC<HotelCardProps> = React.memo(({ hotel, compact = false
             </div>
 
             {/* CTA */}
-            <button className="w-auto flex items-center justify-center gap-2 bg-slate-700 text-white px-5 md:pl-8 md:pr-12 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.8rem] font-black text-[11px] md:text-sm shadow-xl transition-all duration-500 hover:bg-slate-800 hover:shadow-slate-700/30 hover:scale-[1.03] active:scale-95 group/btn relative overflow-hidden shrink-0">
+            <MagneticButton className="w-auto flex items-center justify-center gap-2 bg-slate-700 text-white px-5 md:pl-8 md:pr-12 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.8rem] font-black text-[11px] md:text-sm shadow-xl transition-all duration-500 hover:bg-slate-800 hover:shadow-slate-700/30 active:scale-95 group/btn relative overflow-hidden shrink-0">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000"></div>
               <span>{offerMode ? 'تفاصيل' : 'عرض التفاصيل'}</span>
               <ChevronLeft size={14} className="translate-x-0 group-hover/btn:-translate-x-2 transition-transform duration-300 md:w-5 md:h-5" />
-            </button>
+            </MagneticButton>
           </div>
         </div>
       </div>
@@ -276,4 +280,4 @@ const HotelCard: React.FC<HotelCardProps> = React.memo(({ hotel, compact = false
   );
 });
 
-export default HotelCard;
+export default React.memo(HotelCard);

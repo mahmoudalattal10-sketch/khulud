@@ -1,5 +1,6 @@
 import React from 'react';
 import HotelRoomCard from './HotelRoomCard';
+import { Search, CalendarDays } from 'lucide-react';
 
 interface Room {
     id: string;
@@ -112,8 +113,23 @@ const HotelRooms: React.FC<HotelRoomsProps> = ({
                     />
                 ))
             ) : (
-                <div className="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-                    <p className="text-slate-400 font-bold">لا توجد غرف متاحة حالياً تطابق بحثك.</p>
+                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-slate-100 shadow-sm text-center px-6">
+                    <div className="w-16 h-16 bg-gold/5 rounded-full flex items-center justify-center mb-6 text-gold animate-pulse">
+                        <CalendarDays size={32} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-800 mb-2">لا توجد غرف متاحة في هذه التواريخ</h3>
+                    <p className="text-slate-500 font-medium mb-8 max-w-md mx-auto leading-relaxed">
+                        لضمان أفضل تجربة إقامة، يرجى تعديل التاريخ أو عدد الضيوف لعرض الغرف والعروض الحصرية المتاحة.
+                    </p>
+                    {onOpenSearch && (
+                        <button
+                            onClick={onOpenSearch}
+                            className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-sm hover:bg-gold transition-colors flex items-center gap-3 shadow-xl active:scale-95"
+                        >
+                            <Search size={18} />
+                            تغيير خيارات البحث
+                        </button>
+                    )}
                 </div>
             )}
         </div>

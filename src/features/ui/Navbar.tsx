@@ -5,6 +5,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { User, LogOut, Shield } from 'lucide-react';
 import { useUserPreferences } from '../../contexts/UserPreferencesContext';
+import MagneticButton from './MagneticButton';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -155,9 +156,9 @@ const Navbar: React.FC = () => {
               ) : (
                 // Guest State
                 <Link to="/auth" className="group">
-                  <div className={`flex items-center justify-center px-7 rounded-full bg-gold text-white font-black text-xs lg:text-sm transition-all duration-500 group-hover:bg-[#0f172a] group-hover:shadow-lg active:scale-95 shadow-md shadow-gold/10 ${isScrolled ? 'h-10' : 'h-12'}`}>
+                  <MagneticButton className={`flex items-center justify-center px-7 rounded-full bg-gold text-white font-black text-xs lg:text-sm transition-all duration-500 group-hover:bg-[#0f172a] group-hover:shadow-lg active:scale-95 shadow-md shadow-gold/10 ${isScrolled ? 'h-10' : 'h-12'}`}>
                     تسجيل الدخول
-                  </div>
+                  </MagneticButton>
                 </Link>
               )}
             </div>

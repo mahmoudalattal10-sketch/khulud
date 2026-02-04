@@ -1,8 +1,10 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Star, ChevronRight, Image as ImageIcon, Map as MapIcon, Maximize2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import HotelViewMap from './HotelViewMap';
 
 interface HotelGalleryProps {
+    hotelId?: number | string;
     hotelName: string;
     mainImage: string;
     images: string[];
@@ -14,6 +16,7 @@ interface HotelGalleryProps {
 }
 
 const HotelGallery: React.FC<HotelGalleryProps> = ({
+    hotelId,
     hotelName,
     mainImage,
     images,
@@ -76,7 +79,13 @@ const HotelGallery: React.FC<HotelGalleryProps> = ({
                     {/* 🖥️ Desktop View: Mosaic */}
                     <div className="hidden md:grid md:grid-cols-4 gap-2 md:gap-3 w-full h-full animate-in fade-in duration-700" dir="ltr">
                         <div className="md:col-span-2 md:row-span-2 relative overflow-hidden group/main cursor-pointer h-full">
-                            <img src={displayImages[0]} alt={hotelName} className="w-full h-full object-cover transition-all duration-1000 group-hover/main:scale-105" />
+                            <motion.img
+                                layoutId={hotelId ? `hotel-image-${hotelId}` : undefined}
+                                transition={{ duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] }}
+                                src={displayImages[0]}
+                                alt={hotelName}
+                                className="w-full h-full object-cover transition-all duration-1000 group-hover/main:scale-105"
+                            />
                             <div className="absolute inset-0 bg-secondary/10 opacity-0 group-hover/main:opacity-100 transition-opacity duration-500" />
                         </div>
 

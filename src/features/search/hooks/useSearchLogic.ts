@@ -86,7 +86,8 @@ export const useSearchLogic = () => {
         if (cityValue) params.append('city', cityValue);
         if (searchData.checkIn) params.append('checkIn', formatDate(searchData.checkIn));
         if (searchData.checkOut) params.append('checkOut', formatDate(searchData.checkOut));
-        const totalGuests = (searchData.adults || 0) + (searchData.children || 0);
+        // [MODIFIED] Only count adults for filtering per user request
+        const totalGuests = (searchData.adults || 0);
         if (totalGuests > 0) params.append('guests', totalGuests.toString());
 
         navigate(`/hotels?${params.toString()}`);
